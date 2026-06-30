@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<meta name="theme-color" content="#FAF9F6">
+<title>Drazic Europe 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme:light;
+    --paper:#FAF9F6;
+    --card:#FFFFFF;
+    --ink:#1C2B33;
+    --ink-soft:#52616B;
+    --muted:#8A949B;
+    --line:#E7E2D8;
+    --alpine:#1F6E6A;
+    --alpine-deep:#16524F;
+    --sun:#C98A2E;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;min-height:100%;background:#FAF9F6!important;color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;}
+  body{font-size:16px;line-height:1.55;}
+  button{font:inherit;}
+  .auth-shell{min-height:100vh;display:grid;place-items:center;padding:28px 16px;}
+  .auth-card{width:min(100%,440px);background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px 24px;box-shadow:0 18px 50px rgba(28,43,51,.08);}
+  .eyebrow{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--alpine);font-weight:700;}
+  h1{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(34px,7vw,52px);line-height:1.02;letter-spacing:-.015em;margin:.22em 0 .18em;color:var(--ink);}
+  .copy{margin:0 0 18px;color:var(--ink-soft);font-size:14.5px;}
+  .auth-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .primary-btn,.secondary-btn{border:1px solid var(--alpine);border-radius:999px;padding:9px 14px;cursor:pointer;font-weight:700;}
+  .primary-btn{background:var(--alpine);color:#fff;}
+  .secondary-btn{background:#fff;color:var(--alpine);}
+  .status{font-family:'Space Mono',monospace;font-size:11.5px;color:var(--muted);margin-top:14px;}
+  .topbar{position:sticky;top:0;z-index:50;display:none;align-items:center;justify-content:space-between;gap:12px;padding:8px 14px;background:rgba(250,249,246,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);font-family:'Space Mono',monospace;font-size:11.5px;color:var(--ink-soft);}
+  .topbar.is-visible{display:flex;}
+  .topbar button{border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink-soft);padding:4px 10px;cursor:pointer;font-size:11.5px;}
+  .page-error{max-width:680px;margin:42px auto;padding:20px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);color:var(--ink-soft);}
+  .page-error b{color:var(--ink);}
+  @media (max-width:640px){
+    .auth-card{padding:22px 18px;}
+    .topbar{align-items:flex-start;flex-direction:column;}
+  }
+</style>
+<style id="trip-page-style"></style>
+</head>
+<body>
+<div id="auth" class="auth-shell">
+  <section class="auth-card">
+    <div class="eyebrow">Private trip planner</div>
+    <h1>Europe 2026</h1>
+    <p class="copy">Sign in with an approved Google account to view the itinerary and packing list.</p>
+    <div class="auth-actions">
+      <button id="sign-in" class="primary-btn" type="button">Sign in with Google</button>
+    </div>
+    <div id="auth-status" class="status">Waiting for sign-in.</div>
+  </section>
+</div>
+<div id="topbar" class="topbar" aria-live="polite">
+  <span id="sync-status">Signed in.</span>
+  <button id="sign-out" type="button">Sign out</button>
+</div>
+<main id="app" hidden></main>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
