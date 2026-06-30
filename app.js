@@ -6,7 +6,6 @@ import {
   GoogleAuthProvider,
   onAuthStateChanged,
   setPersistence,
-  signInWithPopup,
   signInWithRedirect,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -59,16 +58,10 @@ getRedirectResult(auth).catch((error) => {
 });
 
 signInButton.addEventListener("click", async () => {
-  setAuthStatus("Opening Google sign-in...");
+  setAuthStatus("Redirecting to Google sign-in...");
   try {
-    const result = await signInWithPopup(auth, provider);
-    await showSignedIn(result.user);
+    await signInWithRedirect(auth, provider);
   } catch (error) {
-    if (["auth/popup-blocked", "auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
-      setAuthStatus("Popup did not complete. Trying redirect sign-in...");
-      await signInWithRedirect(auth, provider);
-      return;
-    }
     setAuthStatus("Sign-in failed. Check that this Google account is on the allowed list.");
     console.error(error);
   }
