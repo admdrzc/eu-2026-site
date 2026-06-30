@@ -1,8 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import {
+  browserLocalPersistence,
   getAuth,
+  getRedirectResult,
   GoogleAuthProvider,
   onAuthStateChanged,
+  setPersistence,
   signInWithPopup,
   signInWithRedirect,
   signOut
@@ -44,11 +47,22 @@ let currentPageId = pageIdFromPath();
 let checklistUnsubscribe = null;
 let remoteItems = {};
 let applyingRemote = false;
+let activeUserId = null;
+
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.error(error);
+});
+
+getRedirectResult(auth).catch((error) => {
+  setAuthStatus(`Sign-in failed: ${error.message}`);
+  console.error(error);
+});
 
 signInButton.addEventListener("click", async () => {
   setAuthStatus("Opening Google sign-in...");
   try {
-    await signInWithPopup(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+    await showSignedIn(result.user);
   } catch (error) {
     if (["auth/popup-blocked", "auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
       setAuthStatus("Popup did not complete. Trying redirect sign-in...");
@@ -63,20 +77,19 @@ signInButton.addEventListener("click", async () => {
 signOutButton.addEventListener("click", () => signOut(auth));
 
 onAuthStateChanged(auth, async (user) => {
-  cleanupChecklistListener();
-  remoteItems = {};
-
   if (!user) {
-    document.title = "Drazic Europe 2026";
-    pageStyle.textContent = "";
-    appRoot.innerHTML = "";
-    appRoot.hidden = true;
-    topbar.classList.remove("is-visible");
-    authShell.hidden = false;
-    setAuthStatus("Waiting for sign-in.");
+    showSignedOut();
     return;
   }
 
+  await showSignedIn(user);
+});
+
+async function showSignedIn(user) {
+  if (activeUserId === user.uid && appRoot.innerHTML) return;
+  activeUserId = user.uid;
+  cleanupChecklistListener();
+  remoteItems = {};
   authShell.hidden = true;
   topbar.classList.add("is-visible");
   appRoot.hidden = false;
@@ -91,7 +104,20 @@ onAuthStateChanged(auth, async (user) => {
     setSyncStatus(`Signed in as ${user.email}. Could not load trip data.`);
     console.error(error);
   }
-});
+}
+
+function showSignedOut() {
+  activeUserId = null;
+  cleanupChecklistListener();
+  remoteItems = {};
+  document.title = "Drazic Europe 2026";
+  pageStyle.textContent = "";
+  appRoot.innerHTML = "";
+  appRoot.hidden = true;
+  topbar.classList.remove("is-visible");
+  authShell.hidden = false;
+  setAuthStatus("Waiting for sign-in.");
+}
 
 async function renderPage(pageId) {
   const pageRef = doc(db, "trips", TRIP_ID, "pages", pageId);
